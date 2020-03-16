@@ -65,13 +65,17 @@ class VehicleTrimForm(tk.Frame):
         self.callbacks = callbacks
         self.inputs = {}
         # Labels
-        self.vehiclemake_label = ttk.Label(self, text=fields['vehiclemake']['label'])
+        # self.vehiclemake_label = ttk.Label(self, text=fields['vehiclemake']['label'])
         self.vehiclemodel_label = ttk.Label(self, text=fields['vehiclemodel']['label'])
         self.vehicletrim_name_label = ttk.Label(self, text=fields['name']['label'])
         # Lookups and inputs
         self.vehiclemake_lookups = fields['vehiclemake']['values']
-        self.inputs['vehiclemake'] = ttk.Combobox(self, values=['', *sorted(self.vehiclemake_lookups)])
-        self.inputs['vehiclemake'].bind('<<ComboboxSelected>>', self.on_vehiclemake_selected)
+        # self.inputs['vehiclemake'] = ttk.Combobox(self, values=['', *sorted(self.vehiclemake_lookups)])
+        # self.inputs['vehiclemake'].bind('<<ComboboxSelected>>', self.on_vehiclemake_selected)
+
+        self.inputs['vehiclemake'] = w.FormField(self, fields['vehiclemake']['label'], ttk.Combobox)  # values
+        self.inputs['vehiclemake'].field.bind('<<ComboboxSelected>>', self.on_vehiclemake_selected)
+
         self.vehiclemodel_lookups = fields['vehiclemodel']['values']
         self.inputs['vehiclemodel'] = ttk.Combobox(self, values=['', *sorted(self.vehiclemodel_lookups)])
         self.inputs['vehiclemodel'].bind('<<ComboboxSelected>>', self.on_vehiclemodel_selected)
@@ -94,7 +98,7 @@ class VehicleTrimForm(tk.Frame):
         self.vehiclemodel_form_btn.state(['disabled'])
         self.inputs['name'].state(['disabled'])
         # Layout
-        self.vehiclemake_label.grid(column=0, row=0)
+        # self.vehiclemake_label.grid(column=0, row=0)
         self.vehiclemodel_label.grid(column=1, row=0)
         self.vehicletrim_name_label.grid(column=2, row=0)
         self.inputs['vehiclemake'].grid(column=0, row=1)
@@ -125,9 +129,9 @@ class VehicleTrimForm(tk.Frame):
         self.vehiclemake_lookups = self.callbacks['qry_vehiclemake']()
         new_values = ['', *sorted(self.vehiclemake_lookups)]
         idx = new_values.index(new_record['name'])
-        self.inputs['vehiclemake'].configure(values=new_values)
-        self.inputs['vehiclemake'].current(idx)
-        self.inputs['vehiclemake'].event_generate('<<ComboboxSelected>>')
+        self.inputs['vehiclemake'].field.configure(values=new_values)
+        self.inputs['vehiclemake'].field.current(idx)
+        self.inputs['vehiclemake'].field.event_generate('<<ComboboxSelected>>')
 
     def on_vehiclemodel_saved(self, new_record):
         vehiclemake = self.inputs['vehiclemake'].get()

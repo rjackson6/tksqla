@@ -4,6 +4,7 @@ from sqlalchemy import (
 )  # Integer, String
 # noinspection PyProtectedMember
 from sqlalchemy.engine import Engine
+from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 import sqlalchemy.types
@@ -28,6 +29,11 @@ class String(sqlalchemy.types.TypeDecorator):
         value = value.strip()
         assert value
         return value
+
+
+@compiles(sqlalchemy.types.String, 'sqlite')
+def compile_string_sqlite(element, compiler, **kwargs):
+    return '{} COLLATE NOCASE'.format(element)
 
 
 class Base(object):

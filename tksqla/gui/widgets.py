@@ -47,8 +47,7 @@ class FormField(tk.Frame):
         self.error_var = tk.StringVar()
         # Widgets
         self.label = ttk.Label(self, text=label_text)
-        # self.field = widget_cls(self, textvariable=self.field_var)
-        self.field = CharEntry(self, textvariable=self.field_var)
+        self.field = widget_cls(self, textvariable=self.field_var)
         self.errors = ttk.Label(self, textvariable=self.error_var)
         # Layout
         self.label.grid(row=0, column=0)
