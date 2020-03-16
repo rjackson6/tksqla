@@ -73,7 +73,8 @@ class VehicleTrimForm(tk.Frame):
         # self.inputs['vehiclemake'] = ttk.Combobox(self, values=['', *sorted(self.vehiclemake_lookups)])
         # self.inputs['vehiclemake'].bind('<<ComboboxSelected>>', self.on_vehiclemake_selected)
 
-        self.inputs['vehiclemake'] = w.FormField(self, fields['vehiclemake']['label'], ttk.Combobox)  # values
+        self.inputs['vehiclemake'] = w.FormField(self, fields['vehiclemake']['label'], w.Combobox,
+                                                 field_args=self.vehiclemake_lookups)  # values_list
         self.inputs['vehiclemake'].field.bind('<<ComboboxSelected>>', self.on_vehiclemake_selected)
 
         self.vehiclemodel_lookups = fields['vehiclemodel']['values']

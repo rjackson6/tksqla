@@ -34,10 +34,17 @@ class CharEntry(ttk.Entry):
         print('Invalid! d:{} i:{} P:{} s:{} S:{} v:{} V:{}'.format(d, i, P, s, S, v, V))
 
 
+class Combobox(ttk.Combobox):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, **kwargs)
+
+
 class FormField(tk.Frame):
-    def __init__(self, parent, label_text, widget_cls, required=True, *args, **kwargs):
+    def __init__(self, parent, label_text, widget_cls, required=True, field_args=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.required = required
+        self.lookups = field_args
+        print(self.lookups)
         # needs label, input widget class, variable+label for errors
         # Variables
         if widget_cls == ttk.Entry:
