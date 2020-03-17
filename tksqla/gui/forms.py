@@ -72,7 +72,6 @@ class VehicleTrimForm(tk.Frame):
         self.fields['vehiclemodel'] = w.FormField(self, fields['vehiclemodel']['label'], w.Combobox,
                                                   input_kwargs={'lookups': self.vehiclemodel_lookups})
         self.vehicletrim_name_var = tk.StringVar()
-        self.fields['name'] = ttk.Entry(self, textvariable=self.vehicletrim_name_var)
         self.fields['name'] = w.FormField(self, fields['name']['label'], w.CharEntry,
                                           input_kwargs={'textvariable': self.vehicletrim_name_var})
         # Bindings
@@ -109,15 +108,15 @@ class VehicleTrimForm(tk.Frame):
         data = {'vehiclemodel_id': vehiclemodel_id, 'name': name}
         return data
 
-    def get_vehiclemake_id(self):
-        vehiclemake = self.fields['vehiclemake'].get()
-        vehiclemake_id = self.vehiclemake_lookups[vehiclemake]
-        return vehiclemake_id
-
     def reset(self):
         self.fields['vehiclemake'].input.set('')
         self.fields['vehiclemodel'].input.set('')
         self.vehicletrim_name_var.set('')
+
+    def get_vehiclemake_id(self):
+        vehiclemake = self.fields['vehiclemake'].get()
+        vehiclemake_id = self.vehiclemake_lookups[vehiclemake]
+        return vehiclemake_id
 
     def on_vehiclemake_saved(self, new_record):
         self.vehiclemake_lookups = self.callbacks['qry_vehiclemake']()
