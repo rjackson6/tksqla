@@ -76,22 +76,22 @@ class Combobox(ttk.Combobox):
 
 
 class FormField(tk.Frame):
-    def __init__(self, parent, label_text, widget_cls, required=True, field_kwargs=None, *args, **kwargs):
+    def __init__(self, parent, label_text, widget_cls, required=True, input_kwargs=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        field_kwargs = field_kwargs or {}
+        input_kwargs = input_kwargs or {}
         self.required = required
-        self.lookups = field_kwargs.get('lookups')
+        self.lookups = input_kwargs.get('lookups')
         # Variables
         if widget_cls in (CharEntry, Combobox):
-            self.field_var = tk.StringVar()
+            self.input_var = tk.StringVar()
         else:
-            self.field_var = tk.StringVar()  # Default
+            self.input_var = tk.StringVar()  # Default
         # Widgets
         if widget_cls == Combobox:
-            self.field = widget_cls(self, lookups=self.lookups)
+            self.input = widget_cls(self, lookups=self.lookups)
         else:
-            self.field = widget_cls(self)
-        self.field.configure(textvariable=self.field_var)
+            self.input = widget_cls(self)
+        self.input.configure(textvariable=self.input_var)
 
         # Label and Errors
         self.label = ttk.Label(self, text=label_text)
@@ -99,12 +99,12 @@ class FormField(tk.Frame):
         self.errors = ttk.Label(self, textvariable=self.error_var)
         # Layout
         self.label.grid(row=0, column=0)
-        self.field.grid(row=1, column=0)
+        self.input.grid(row=1, column=0)
         self.errors.grid(row=2, column=0)
 
     def is_valid(self):
-        self.field.validate()
-        current_value = self.field_var.get()
+        self.input.validate()
+        current_value = self.input_var.get()
         if self.required:
             if not current_value:
                 self.error_var.set('This field is required')
@@ -112,5 +112,5 @@ class FormField(tk.Frame):
         return True
 
     def get(self):
-        if self.field_var:
-            return self.field_var.get()
+        if self.input_var:
+            return self.input_var.get()
