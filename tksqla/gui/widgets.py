@@ -4,14 +4,14 @@ import tkinter as tk
 
 class Toplevel(tk.Toplevel):
     def __init__(self, parent, called_from=None, modal=False, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+        super().__init__(parent, **kwargs)
         self.called_from = called_from
         self.modal = modal
 
 
 class CharEntry(ttk.Entry):
     def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+        super().__init__(parent, **kwargs)
         vcmd = self.register(self._validate_all)
         invcmd = self.register(self._invalid_command)
         self.tk_var = kwargs.get('textvariable') or tk.StringVar()
@@ -35,26 +35,67 @@ class CharEntry(ttk.Entry):
 
 
 class Combobox(ttk.Combobox):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, lookups=None, *args, **kwargs):
         super().__init__(parent, **kwargs)
+        self.lookups = lookups or {}
+        vcmd = self.register(self._validate_all)
+        invcmd = self.register(self._invalid_command)
+        self.configure(
+            validate='all',
+            validatecommand=(vcmd, '%d', '%i', '%P', '%s', '%S', '%v', '%V'),
+            invalidcommand=(invcmd, '%d', '%i', '%P', '%s', '%S', '%v', '%V'),
+            values=['', *sorted(self.lookups)]
+        )
+
+    def _validate_all(self, d, i, P, s, S, v, V):
+        print('d:{} i:{} P:{} s:{} S:{} v:{} V:{}'.format(d, i, P, s, S, v, V))
+        if V == 'focusout':
+            self._validate_focusout(s)
+        elif V == 'key':
+            self._validate_key(d, i, P, s, S)
+        return True
+
+    def _validate_key(self, d, i, P, s, S):
+        if P and d == '1':
+            for key in self.lookups:
+                if key.casefold().startswith(P.casefold()):
+                    autocomplete = key
+                    n = len(S)
+                    new_index = int(i) + n
+                    self.set(autocomplete)
+                    self.select_range(new_index, tk.END)
+                    self.icursor(new_index)
+                    break
+
+    def _validate_focusout(self, s):
+        s = s.strip()
+        return True
+
+    def _invalid_command(self, d, i, P, s, S, v, V):
+        print('Invalid! d:{} i:{} P:{} s:{} S:{} v:{} V:{}'.format(d, i, P, s, S, v, V))
 
 
 class FormField(tk.Frame):
-    def __init__(self, parent, label_text, widget_cls, required=True, field_args=None, *args, **kwargs):
+    def __init__(self, parent, label_text, widget_cls, required=True, field_kwargs=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
+        field_kwargs = field_kwargs or {}
         self.required = required
-        self.lookups = field_args
-        print(self.lookups)
-        # needs label, input widget class, variable+label for errors
+        self.lookups = field_kwargs.get('lookups')
         # Variables
-        if widget_cls == ttk.Entry:
+        if widget_cls in (CharEntry, Combobox):
             self.field_var = tk.StringVar()
         else:
-            self.field_var = None  # Placeholder
-        self.error_var = tk.StringVar()
+            self.field_var = tk.StringVar()  # Default
         # Widgets
+        if widget_cls == Combobox:
+            self.field = widget_cls(self, lookups=self.lookups)
+        else:
+            self.field = widget_cls(self)
+        self.field.configure(textvariable=self.field_var)
+
+        # Label and Errors
         self.label = ttk.Label(self, text=label_text)
-        self.field = widget_cls(self, textvariable=self.field_var)
+        self.error_var = tk.StringVar()
         self.errors = ttk.Label(self, textvariable=self.error_var)
         # Layout
         self.label.grid(row=0, column=0)
@@ -71,30 +112,5 @@ class FormField(tk.Frame):
         return True
 
     def get(self):
-        return self.field_var.get()
-
-# class RequiredEntry(ttk.Entry):
-#     def __init__(self, parent, *args, **kwargs):
-#         super().__init__(parent, *args, **kwargs)
-#         vcmd = self.register(self.useless)
-#         self.configure(
-#             validate='all',
-#             validatecommand=(vcmd, '%v', '%V')
-#         )
-#         self.state(['invalid'])
-#         print(self.state())
-#
-#     def _focusout_validate(self, subcode_v, subcode_V):
-#         print(subcode_v, type(subcode_V))
-#         if not self.get():
-#             print('False')
-#             return False
-#         else:
-#             print('True')
-#             return True
-#
-#     def useless(self, subcode_1, subcode_2):
-#         print(subcode_1, subcode_2)
-#         print('oh hi mark!')
-#         print(self.state())
-#         return False
+        if self.field_var:
+            return self.field_var.get()
