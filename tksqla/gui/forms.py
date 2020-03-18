@@ -8,6 +8,7 @@ class VehicleMakeForm(tk.Frame):
         super().__init__(parent, *args, **kwargs)
         self.callbacks = callbacks
         self.fields = {}
+        # self.fields['name'] = w.FormField(self, fields['name'].label, ttk.Entry, fields['name'].required)
         self.fields['name'] = w.FormField(self, fields['name']['label'], ttk.Entry, fields['name']['required'])
         self.save_btn = ttk.Button(self, text='Save', command=self.callbacks['on_save_vehiclemake_form'])
         # Layout
@@ -31,23 +32,20 @@ class VehicleModelForm(tk.Frame):
         super().__init__(parent, *args, **kwargs)
         self.callbacks = callbacks
         self.fields = {}
-        # Labels
-        self.vmake_label = ttk.Label(self, text=fields['vehiclemake']['label'])
-        self.name_label = ttk.Label(self, text=fields['name']['label'])
         # Inputs
         self.vehiclemake_lookups = fields['vehiclemake']['values']
-        self.fields['vehiclemake'] = ttk.Combobox(self, values=['', *sorted(self.vehiclemake_lookups)])
+        self.fields['vehiclemake'] = w.FormField(self, fields['vehiclemake']['label'], w.Combobox,
+                                                 input_kwargs={'lookups': self.vehiclemake_lookups})
         if fields['vehiclemake']['disabled']:
-            self.fields['vehiclemake'].state(['disabled'])
+            self.fields['vehiclemake'].input.state(['disabled'])
         if 'initial' in fields['vehiclemake']:
-            self.fields['vehiclemake'].set(fields['vehiclemake']['initial'])
+            self.fields['vehiclemake'].input.set(fields['vehiclemake']['initial'])
         self.name_var = tk.StringVar()
-        self.fields['name'] = ttk.Entry(self, textvariable=self.name_var)
+        self.fields['name'] = w.FormField(self, fields['name']['label'], w.CharEntry,
+                                          input_kwargs={'textvariable': self.name_var})
         self.save_btn = ttk.Button(self, text='Save', command=self.callbacks['on_save_vehiclemodel_form'])
         # Layout
-        self.vmake_label.grid(column=0, row=0)
         self.fields['vehiclemake'].grid(column=0, row=1)
-        self.name_label.grid(column=1, row=0)
         self.fields['name'].grid(column=1, row=1)
         self.save_btn.grid(column=1, row=2)
 

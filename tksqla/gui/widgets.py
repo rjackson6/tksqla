@@ -76,16 +76,24 @@ class Combobox(ttk.Combobox):
 
 
 class FormField(tk.Frame):
-    def __init__(self, parent, label_text, widget_cls, required=True, input_kwargs=None, *args, **kwargs):
+    def __init__(self,
+                 parent,
+                 label_text,
+                 widget_cls,
+                 required=True,
+                 input_kwargs=None,
+                 *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         input_kwargs = input_kwargs or {}
         self.required = required
         self.lookups = input_kwargs.get('lookups')
         # Variables
-        if widget_cls in (CharEntry, Combobox):
-            self.input_var = tk.StringVar()
-        else:
-            self.input_var = tk.StringVar()  # Default
+        self.input_var = input_kwargs.get('textvariable')
+        if not self.input_var:
+            if widget_cls in (CharEntry, Combobox):
+                self.input_var = tk.StringVar()
+            else:
+                self.input_var = tk.StringVar()  # Default
         # Widgets
         if widget_cls == Combobox:
             self.input = widget_cls(self, lookups=self.lookups)

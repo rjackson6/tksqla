@@ -1,10 +1,34 @@
 from . import models as m
 
 
-class VehicleMakeForm:
-    fields = {
-        'name': {'label': 'Name', 'required': True}
-    }
+class Field:
+    def __init__(self, default=None, disabled=False, initial=None, label=None, required=True, values=None):
+        self.default = default
+        self.disabled = disabled
+        self.initial = initial
+        self.label = label
+        self.required = required
+        self.values = values or {}
+
+
+class Form:
+    def __new__(cls, *args, **kwargs):
+        cls._fields = {}
+        for k, v in vars(cls).items():
+            if isinstance(v, Field):
+                cls._fields[k] = v
+        return super().__new__(cls)
+
+    @property
+    def fields(self):
+        f = {}
+        for key, field in self._fields.items():
+            f[key] = vars(field)
+        return f
+
+
+class VehicleMakeForm(Form):
+    name = Field(label='Vehicle Make Name')
 
     def save(self, session, data):
         new_make = m.VehicleMake(name=data['name'])
@@ -13,23 +37,22 @@ class VehicleMakeForm:
         return {'name': new_make.name, 'id': new_make.id}
 
 
-class VehicleModelForm:
-    fields = {
-        'vehiclemake': {'label': 'Vehicle Make', 'required': True, 'values': {}, 'disabled': False, 'initial': ''},
-        'name': {'label': 'Name', 'required': True}
-    }
+class VehicleModelForm(Form):
+    vehiclemake = Field(label='Vehicle Make', initial='')
+    name = Field(label='Name')
 
     def __init__(self, session, **kwargs):
+        super().__init__()
         data = kwargs.get('data', None)
         vehiclemake_id = kwargs.get('vehiclemake_id', None)
         q_vehiclemake = session.query(m.VehicleMake)
         if vehiclemake_id:
             vehiclemake = q_vehiclemake.get(vehiclemake_id)
-            self.fields['vehiclemake']['values'] = {vehiclemake.name: vehiclemake.id}
-            self.fields['vehiclemake']['disabled'] = True
-            self.fields['vehiclemake']['initial'] = vehiclemake.name
+            self.vehiclemake.values = {vehiclemake.name: vehiclemake.id}
+            self.vehiclemake.disabled = True
+            self.vehiclemake.initial = vehiclemake.name
         elif not data:
-            self.fields['vehiclemake']['values'] = {row.name: row.id for row in q_vehiclemake.all()}
+            self.vehiclemake.values = {row.name: row.id for row in q_vehiclemake.all()}
 
     def save(self, session, data):
         new_model = m.VehicleModel(vehiclemake_id=data['vehiclemake_id'], name=data['name'])
@@ -38,19 +61,18 @@ class VehicleModelForm:
         return {'name': new_model.name, 'id': new_model.id}
 
 
-class VehicleTrimForm:
-    fields = {
-        'vehiclemake': {'label': 'Vehicle Make', 'values': {}},
-        'vehiclemodel': {'label': 'Vehicle Model', 'required': True, 'values': {}},
-        'name': {'label': 'Name', 'required': True}
-    }
+class VehicleTrimForm(Form):
+    vehiclemake = Field(label='Vehicle Make')
+    vehiclemodel = Field(label='Vehicle Model')
+    name = Field(label='Name')
 
     def __init__(self, session, data=None):
+        super().__init__()
         self.data = data
         self.session = session
         if not self.data:
             q_vehiclemake = session.query(m.VehicleMake)
-            self.fields['vehiclemake']['values'] = {row.name: row.id for row in q_vehiclemake.all()}
+            self.vehiclemake.values = {row.name: row.id for row in q_vehiclemake.all()}
 
     def save(self):
         new_trim = m.VehicleTrim(vehiclemodel_id=self.data['vehiclemodel_id'], name=self.data['name'])
