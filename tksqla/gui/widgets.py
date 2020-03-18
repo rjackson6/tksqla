@@ -75,17 +75,11 @@ class Combobox(ttk.Combobox):
         print('Invalid! d:{} i:{} P:{} s:{} S:{} v:{} V:{}'.format(d, i, P, s, S, v, V))
 
 
-class FormField(tk.Frame):
-    def __init__(self,
-                 parent,
-                 label_text,
-                 widget_cls,
-                 required=True,
-                 input_kwargs=None,
-                 *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+class FormField(ttk.Frame):
+    def __init__(self, parent, field_cfg, widget_cls, input_kwargs=None, *args, **kwargs):
+        super().__init__(parent, **kwargs)
         input_kwargs = input_kwargs or {}
-        self.required = required
+        self.required = field_cfg['required']
         self.lookups = input_kwargs.get('lookups')
         # Variables
         self.input_var = input_kwargs.get('textvariable')
@@ -102,7 +96,7 @@ class FormField(tk.Frame):
         self.input.configure(textvariable=self.input_var)
 
         # Label and Errors
-        self.label = ttk.Label(self, text=label_text)
+        self.label = ttk.Label(self, text=field_cfg['label'])
         self.error_var = tk.StringVar()
         self.errors = ttk.Label(self, textvariable=self.error_var)
         # Layout

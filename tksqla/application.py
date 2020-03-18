@@ -25,10 +25,16 @@ class Application(tk.Tk):
             'qry_vehiclemake': self.qry_vehiclemake
         }
 
+        self.main_frame = ttk.Frame(self)
+        self.status_bar = ttk.Frame(self)
+
+        self.main_frame.grid(row=0)
+        self.status_bar.grid(row=1)
+        """
         self.vehicletrim_btn = ttk.Button(self, text='Add Vehicle Trim',
                                           command=self.callbacks['open_vehicletrim_form'])
         self.vehicletrim_btn.pack()
-
+        """
         self.vehiclemake_form_window = None
         self.vehiclemodel_form_window = None
         self.vehicletrim_form_window = None

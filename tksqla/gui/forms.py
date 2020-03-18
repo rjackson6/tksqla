@@ -8,8 +8,7 @@ class VehicleMakeForm(tk.Frame):
         super().__init__(parent, *args, **kwargs)
         self.callbacks = callbacks
         self.fields = {}
-        # self.fields['name'] = w.FormField(self, fields['name'].label, ttk.Entry, fields['name'].required)
-        self.fields['name'] = w.FormField(self, fields['name']['label'], ttk.Entry, fields['name']['required'])
+        self.fields['name'] = w.FormField(self, fields['name'], widget_cls=w.CharEntry)
         self.save_btn = ttk.Button(self, text='Save', command=self.callbacks['on_save_vehiclemake_form'])
         # Layout
         self.fields['name'].grid(column=0, row=1)
@@ -34,14 +33,14 @@ class VehicleModelForm(tk.Frame):
         self.fields = {}
         # Inputs
         self.vehiclemake_lookups = fields['vehiclemake']['values']
-        self.fields['vehiclemake'] = w.FormField(self, fields['vehiclemake']['label'], w.Combobox,
+        self.fields['vehiclemake'] = w.FormField(self, fields['vehiclemake'], w.Combobox,
                                                  input_kwargs={'lookups': self.vehiclemake_lookups})
         if fields['vehiclemake']['disabled']:
             self.fields['vehiclemake'].input.state(['disabled'])
         if 'initial' in fields['vehiclemake']:
             self.fields['vehiclemake'].input.set(fields['vehiclemake']['initial'])
         self.name_var = tk.StringVar()
-        self.fields['name'] = w.FormField(self, fields['name']['label'], w.CharEntry,
+        self.fields['name'] = w.FormField(self, fields['name'], w.CharEntry,
                                           input_kwargs={'textvariable': self.name_var})
         self.save_btn = ttk.Button(self, text='Save', command=self.callbacks['on_save_vehiclemodel_form'])
         # Layout
@@ -64,13 +63,13 @@ class VehicleTrimForm(tk.Frame):
         self.fields = {}
         # Lookups and inputs
         self.vehiclemake_lookups = fields['vehiclemake']['values']
-        self.fields['vehiclemake'] = w.FormField(self, fields['vehiclemake']['label'], w.Combobox,
+        self.fields['vehiclemake'] = w.FormField(self, fields['vehiclemake'], w.Combobox,
                                                  input_kwargs={'lookups': self.vehiclemake_lookups})
         self.vehiclemodel_lookups = fields['vehiclemodel']['values']
-        self.fields['vehiclemodel'] = w.FormField(self, fields['vehiclemodel']['label'], w.Combobox,
+        self.fields['vehiclemodel'] = w.FormField(self, fields['vehiclemodel'], w.Combobox,
                                                   input_kwargs={'lookups': self.vehiclemodel_lookups})
         self.vehicletrim_name_var = tk.StringVar()
-        self.fields['name'] = w.FormField(self, fields['name']['label'], w.CharEntry,
+        self.fields['name'] = w.FormField(self, fields['name'], w.CharEntry,
                                           input_kwargs={'textvariable': self.vehicletrim_name_var})
         # Bindings
         self.fields['vehiclemake'].input.bind('<<ComboboxSelected>>', self.on_vehiclemake_selected)
