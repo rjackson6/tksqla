@@ -1,1 +1,1 @@
-from . import forms, widgets
+from . import forms, widgets, views

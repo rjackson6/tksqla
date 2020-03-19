@@ -4,7 +4,7 @@ from . import widgets as w
 
 
 class VehicleMakeForm(tk.Frame):
-    def __init__(self, parent, fields, callbacks, *args, **kwargs):
+    def __init__(self, parent, fields, callbacks, **kwargs):
         super().__init__(parent, **kwargs)
         self.callbacks = callbacks
         self.fields = {}

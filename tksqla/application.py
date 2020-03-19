@@ -4,17 +4,19 @@ from sqlalchemy.orm import sessionmaker
 from tkinter import messagebox, ttk
 from . import db
 from . import gui
+from . import menus
 import tkinter as tk
 import sys
 
 
 class Application(tk.Tk):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, *kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.title('TkSQLA')
         engine = create_engine('sqlite:///var/db.sqlite', echo=True)
         self.Session = sessionmaker(bind=engine)
         self.callbacks = {
+            'file--quit': self.quit,
             'filter_vehiclemodel_by_vehiclemake': self.filter_vehiclemodel_by_vehiclemake,
             'open_vehiclemake_form': self.open_vehiclemake_form,
             'open_vehiclemodel_form': self.open_vehiclemodel_form,
@@ -28,6 +30,9 @@ class Application(tk.Tk):
         self.minsize(640, 480)
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
+        # Menu
+        menu = menus.MainMenu(self, self.callbacks)
+        self.configure(menu=menu)
         # First "layer" of elements
         self.main_frame = tk.Frame(self)
         self.main_frame.configure(bg='lightblue')
