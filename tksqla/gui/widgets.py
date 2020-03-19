@@ -75,7 +75,7 @@ class Combobox(ttk.Combobox):
         print('Invalid! d:{} i:{} P:{} s:{} S:{} v:{} V:{}'.format(d, i, P, s, S, v, V))
 
 
-class FormField(ttk.Frame):
+class FormField(tk.Frame):
     def __init__(self, parent, field_cfg, widget_cls, input_kwargs=None, *args, **kwargs):
         super().__init__(parent, **kwargs)
         input_kwargs = input_kwargs or {}

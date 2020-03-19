@@ -5,7 +5,7 @@ from . import widgets as w
 
 class VehicleMakeForm(tk.Frame):
     def __init__(self, parent, fields, callbacks, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+        super().__init__(parent, **kwargs)
         self.callbacks = callbacks
         self.fields = {}
         self.fields['name'] = w.FormField(self, fields['name'], widget_cls=w.CharEntry)
@@ -28,7 +28,7 @@ class VehicleMakeForm(tk.Frame):
 
 class VehicleModelForm(tk.Frame):
     def __init__(self, parent, fields, callbacks, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+        super().__init__(parent, **kwargs)
         self.callbacks = callbacks
         self.fields = {}
         # Inputs
@@ -58,7 +58,7 @@ class VehicleModelForm(tk.Frame):
 
 class VehicleTrimForm(tk.Frame):
     def __init__(self, parent, fields, callbacks, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+        super().__init__(parent, **kwargs)
         self.callbacks = callbacks
         self.fields = {}
         # Lookups and inputs

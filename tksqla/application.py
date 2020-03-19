@@ -24,17 +24,32 @@ class Application(tk.Tk):
             'on_save_vehicletrim_form': self.on_save_vehicletrim_form,
             'qry_vehiclemake': self.qry_vehiclemake
         }
-
-        self.main_frame = ttk.Frame(self)
-        self.status_bar = ttk.Frame(self)
-
-        self.main_frame.grid(row=0)
-        self.status_bar.grid(row=1)
-        """
-        self.vehicletrim_btn = ttk.Button(self, text='Add Vehicle Trim',
+        # Root configuration for minsize, resize support
+        self.minsize(640, 480)
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        # First "layer" of elements
+        self.main_frame = tk.Frame(self)
+        self.main_frame.configure(bg='lightblue')
+        self.main_frame.rowconfigure(0, weight=1)
+        self.main_frame.columnconfigure(1, weight=1)
+        self.status_bar = tk.Frame(self)
+        self.status_bar.configure(relief='ridge', bd=1)
+        self.status_bar_label = ttk.Label(self.status_bar, text='STATUS BAR!')
+        self.status_bar_label.grid(row=0)
+        self.main_frame.grid(row=0, sticky='NSEW')
+        self.status_bar.grid(row=1, sticky='EW')
+        # sub-main_frame
+        self.left_nav_frame = tk.Frame(self.main_frame)
+        self.workspace_frame = tk.Frame(self.main_frame)
+        self.left_nav_frame.configure(bg='#85929E')
+        self.workspace_frame.configure(bg='#5D6D7E')
+        self.left_nav_frame.grid(row=0, column=0, sticky='NSEW')
+        self.workspace_frame.grid(row=0, column=1, sticky='NSEW')
+        self.vehicletrim_btn = ttk.Button(self.left_nav_frame, text='Add Vehicle Trim',
                                           command=self.callbacks['open_vehicletrim_form'])
-        self.vehicletrim_btn.pack()
-        """
+        self.vehicletrim_btn.grid(row=0, column=0)
+
         self.vehiclemake_form_window = None
         self.vehiclemodel_form_window = None
         self.vehicletrim_form_window = None
@@ -107,18 +122,26 @@ class Application(tk.Tk):
             self.vehiclemodel_form_window.destroy()
 
     def open_vehicletrim_form(self):
+        """
         if self.vehicletrim_form_window is None or not self.vehicletrim_form_window.winfo_exists():
             self.vehicletrim_form_window = tk.Toplevel(self)
+        """
+        if self.vehicletrim_form is None:
             with self.session_scope() as session:
                 self.vehicletrim_form = gui.forms.VehicleTrimForm(
-                    self.vehicletrim_form_window,
+                    # self.vehicletrim_form_window,
+                    self.workspace_frame,
                     db.forms.VehicleTrimForm(session).fields,
                     self.callbacks
                 )
-            self.vehicletrim_form.pack()
+            self.vehicletrim_form.grid(row=0, column=0)
+        else:
+            self.vehicletrim_form.lift()
+        """
         else:
             self.vehicletrim_form_window.lift(self)
         self.vehicletrim_form_window.focus()
+        """
 
     def on_save_vehicletrim_form(self):
         data = self.vehicletrim_form.get()
