@@ -5,8 +5,9 @@ from tkinter import messagebox, ttk
 from . import db
 from . import gui
 from . import menus
+from .constants import DEFAULT_CONFIG
+import configparser
 import tkinter as tk
-import sys
 
 
 class Application(tk.Tk):
@@ -27,6 +28,8 @@ class Application(tk.Tk):
             'on_save_vehicletrim_form': self.on_save_vehicletrim_form,
             'qry_vehiclemake': self.qry_vehiclemake
         }
+        self.settings = self.load_settings()
+
         # Root configuration for minsize, resize support
         self.minsize(640, 480)
         self.rowconfigure(0, weight=1)
@@ -78,6 +81,12 @@ class Application(tk.Tk):
             raise
         finally:
             session.close()
+
+    def load_settings(self):
+        config = configparser.ConfigParser()
+        config.read_dict(DEFAULT_CONFIG)
+        config.read('settings.ini')
+        return config
 
     def open_vehiclemake_form(self, called_from=None, modal=False):
         self.vehiclemake_form_window = gui.widgets.Toplevel(self, called_from, modal)
