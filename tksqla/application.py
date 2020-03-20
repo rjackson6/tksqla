@@ -17,6 +17,7 @@ class Application(tk.Tk):
         self.Session = sessionmaker(bind=engine)
         self.callbacks = {
             'file--quit': self.quit,
+            'settings--preferences': self.open_preferences,
             'filter_vehiclemodel_by_vehiclemake': self.filter_vehiclemodel_by_vehiclemake,
             'open_vehiclemake_form': self.open_vehiclemake_form,
             'open_vehiclemodel_form': self.open_vehiclemodel_form,
@@ -61,6 +62,9 @@ class Application(tk.Tk):
         self.vehiclemake_form = None
         self.vehiclemodel_form = None
         self.vehicletrim_form = None
+
+        self.preferences_form_window = None
+        self.preferences_form = None
 
     @contextmanager
     def session_scope(self):
@@ -168,3 +172,15 @@ class Application(tk.Tk):
     def filter_vehiclemodel_by_vehiclemake(self, vehiclemake_id):
         with self.session_scope() as session:
             return db.queries.qry_filter_vehiclemodel(session, vehiclemake_id)
+
+    def open_preferences(self):
+        if self.preferences_form_window is None or not self.preferences_form_window.winfo_exists():
+            self.preferences_form_window = tk.Toplevel(self)
+            self.preferences_form_window.minsize(480, 320)
+            self.preferences_form_window.rowconfigure(0, weight=1)
+            self.preferences_form_window.columnconfigure(0, weight=1)
+            self.preferences_form = menus.Preferences(self.preferences_form_window, self.callbacks)
+            self.preferences_form.grid(row=0, column=0, sticky='NSEW')
+        else:
+            self.preferences_form_window.lift(self)
+        self.preferences_form_window.focus()

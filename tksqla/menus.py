@@ -12,5 +12,48 @@ class MainMenu(tk.Menu):
         self.add_cascade(label='File', menu=file_menu)
 
         settings_menu = tk.Menu(self, tearoff=False)
-        settings_menu.add_command(label='Preferences...')
+        settings_menu.add_command(label='Preferences...', command=self.callbacks['settings--preferences'])
         self.add_cascade(label='Settings', menu=settings_menu)
+
+
+class Preferences(tk.Frame):
+    def __init__(self, parent, callbacks, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.callbacks = callbacks
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=4)
+        left_frame = tk.Frame(self, bg='bisque')
+        right_frame = tk.Frame(self, bg='lightblue')
+        left_frame.grid(row=0, column=0, sticky='NSEW')
+        right_frame.grid(row=0, column=1, sticky='NSEW')
+        left_frame.columnconfigure(0, weight=1)
+        # placeholder label
+        pref_tree = ttk.Treeview(left_frame)
+        pref_tree.insert('', 'end', iid='appearance', text='Appearance!')
+        pref_tree.insert('', 'end', iid='general', text='General Settings!')
+        pref_tree.grid(row=0, column=0)
+
+        self.appearance_frame = PreferencesAppearance(right_frame, self.callbacks)
+        self.general_frame = PreferencesGeneral(right_frame, self.callbacks)
+        self.appearance_frame.grid(row=0, column=0)
+        self.general_frame.grid(row=0, column=0)
+
+
+class PreferencesAppearance(tk.Frame):
+    def __init__(self, parent, callbacks, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.inputs = {}
+        self.font_size_var = tk.IntVar()
+        self.font_size_label = ttk.Label(self, text='Font size')
+        self.inputs['font_size'] = tk.Spinbox(self, textvariable=self.font_size_var)
+        # Layout
+        self.font_size_label.grid(row=0, column=0)
+        self.inputs['font_size'].grid(row=0, column=1)
+
+
+class PreferencesGeneral(tk.Frame):
+    def __init__(self, parent, callbacks, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.placeholder = ttk.Label(self, text='Placeholder for general settings')
+        self.placeholder.grid(row=0, column=0)
