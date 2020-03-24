@@ -2,9 +2,12 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from tkinter import messagebox, ttk
+from tkinter import font as tkfont
+from tkinter.font import Font
 from . import db
 from . import gui
 from . import menus
+from .config import AppConfig
 from .constants import DEFAULT_CONFIG
 import configparser
 import tkinter as tk
@@ -13,12 +16,19 @@ import tkinter as tk
 class Application(tk.Tk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._appconfig = AppConfig()
+        # self._config = None  # load config
+        # self._font = None
+        # self.settings = self.load_settings()
+        self.settings = {}
+
         self.title('TkSQLA')
         engine = create_engine('sqlite:///var/db.sqlite', echo=True)
         self.Session = sessionmaker(bind=engine)
         self.callbacks = {
             'file--quit': self.quit,
             'settings--preferences': self.open_preferences,
+            'settings--preferences--update': self.update_preferences,
             'filter_vehiclemodel_by_vehiclemake': self.filter_vehiclemodel_by_vehiclemake,
             'open_vehiclemake_form': self.open_vehiclemake_form,
             'open_vehiclemodel_form': self.open_vehiclemodel_form,
@@ -28,7 +38,6 @@ class Application(tk.Tk):
             'on_save_vehicletrim_form': self.on_save_vehicletrim_form,
             'qry_vehiclemake': self.qry_vehiclemake
         }
-        self.settings = self.load_settings()
 
         # Root configuration for minsize, resize support
         self.minsize(640, 480)
@@ -57,7 +66,9 @@ class Application(tk.Tk):
         self.workspace_frame.grid(row=0, column=1, sticky='NSEW')
         self.vehicletrim_btn = ttk.Button(self.left_nav_frame, text='Add Vehicle Trim',
                                           command=self.callbacks['open_vehicletrim_form'])
+        self.test_settings_btn = ttk.Button(self.left_nav_frame, text='Testing settings')
         self.vehicletrim_btn.grid(row=0, column=0)
+        self.test_settings_btn.grid(row=1, column=0)
 
         self.vehiclemake_form_window = None
         self.vehiclemodel_form_window = None
@@ -81,12 +92,6 @@ class Application(tk.Tk):
             raise
         finally:
             session.close()
-
-    def load_settings(self):
-        config = configparser.ConfigParser()
-        config.read_dict(DEFAULT_CONFIG)
-        config.read('settings.ini')
-        return config
 
     def open_vehiclemake_form(self, called_from=None, modal=False):
         self.vehiclemake_form_window = gui.widgets.Toplevel(self, called_from, modal)
@@ -188,8 +193,12 @@ class Application(tk.Tk):
             self.preferences_form_window.minsize(480, 320)
             self.preferences_form_window.rowconfigure(0, weight=1)
             self.preferences_form_window.columnconfigure(0, weight=1)
-            self.preferences_form = menus.Preferences(self.preferences_form_window, self.callbacks)
+            self.preferences_form = menus.Preferences(self.preferences_form_window, self.callbacks, self.settings)
             self.preferences_form.grid(row=0, column=0, sticky='NSEW')
         else:
             self.preferences_form_window.lift(self)
         self.preferences_form_window.focus()
+
+    def update_preferences(self, data):
+        print(data)
+        self._appconfig.update_settings(data)

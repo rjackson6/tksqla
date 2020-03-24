@@ -17,9 +17,10 @@ class MainMenu(tk.Menu):
 
 
 class Preferences(tk.Frame):
-    def __init__(self, parent, callbacks, **kwargs):
+    def __init__(self, parent, callbacks, settings, **kwargs):
         super().__init__(parent, **kwargs)
         self.callbacks = callbacks
+        self.settings = settings
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=4)
@@ -37,7 +38,7 @@ class Preferences(tk.Frame):
 
         right_frame.rowconfigure(0, weight=1)
         right_frame.columnconfigure(0, weight=1)
-        self.appearance_frame = PreferencesAppearance(right_frame, self.callbacks)
+        self.appearance_frame = PreferencesAppearance(right_frame, self.callbacks, self.settings)
         self.general_frame = PreferencesGeneral(right_frame, self.callbacks)
         self.appearance_frame.grid(row=0, column=0, sticky='NSEW')
         self.general_frame.grid(row=0, column=0, sticky='NSEW')
@@ -52,15 +53,30 @@ class Preferences(tk.Frame):
 
 
 class PreferencesAppearance(tk.Frame):
-    def __init__(self, parent, callbacks, **kwargs):
+    def __init__(self, parent, callbacks, settings, **kwargs):
         super().__init__(parent, **kwargs)
+        self.callbacks = callbacks
+        self.settings = settings
+
         self.inputs = {}
         self.font_size_var = tk.IntVar()
+        self.font_size_var.set(16)
         self.font_size_label = ttk.Label(self, text='Font size')
-        self.inputs['font_size'] = tk.Spinbox(self, textvariable=self.font_size_var)
+        self.inputs['fontsize'] = tk.Spinbox(self, textvariable=self.font_size_var)
         # Layout
         self.font_size_label.grid(row=0, column=0)
-        self.inputs['font_size'].grid(row=0, column=1)
+        self.inputs['fontsize'].grid(row=0, column=1)
+
+        self.apply_btn = tk.Button(self, text='Apply', command=self.test_font)
+        self.apply_btn.configure(font=('Times New Roman', self.font_size_var.get()))
+        self.apply_btn.grid(row=1, column=1)
+
+    def test_font(self):
+        self.font_size_var.set(48)
+        data = {}
+        for key, widget in self.inputs.items():
+            data[key] = widget.get()
+        self.callbacks['settings--preferences--update'](data)
 
 
 class PreferencesGeneral(tk.Frame):
