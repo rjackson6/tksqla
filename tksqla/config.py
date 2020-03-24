@@ -1,12 +1,22 @@
 from tkinter import font as tkfont
+from tkinter import ttk
 from .constants import DEFAULT_CONFIG
+from .ext.themes import THEMES
 import configparser
 
 
 class AppConfig:
     def __init__(self):
         self.cp = configparser.ConfigParser()
+        self._load_themes()
         self.load()
+
+    def _load_themes(self):
+        style = ttk.Style()
+        for k, v in THEMES.items():
+            style.theme_create(k, v['parent'], v['settings'])
+        style.theme_use('Dark')
+        print(style.theme_names())
 
     def _update_font(self):
         for font in ('TkHeadingFont', 'TkTextFont', 'TkDefaultFont'):
@@ -31,9 +41,3 @@ class AppConfig:
             self._update_font()
         self.save()
         return
-
-"""
-        s = ttk.Style()
-        self.load_settings()
-        print(tkfont.names())
-"""

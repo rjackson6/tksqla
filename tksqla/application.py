@@ -197,5 +197,4 @@ class Application(tk.Tk):
 
     def update_preferences(self):
         data = self.preferences_form.appearance_frame.get()
-        print(data)
         self._appconfig.update_settings(data)
