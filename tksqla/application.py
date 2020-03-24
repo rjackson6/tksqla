@@ -141,10 +141,6 @@ class Application(tk.Tk):
             self.vehiclemodel_form_window.destroy()
 
     def open_vehicletrim_form(self):
-        """
-        if self.vehicletrim_form_window is None or not self.vehicletrim_form_window.winfo_exists():
-            self.vehicletrim_form_window = tk.Toplevel(self)
-        """
         if self.vehicletrim_form is None:
             with self.session_scope() as session:
                 self.vehicletrim_form = gui.forms.VehicleTrimForm(
@@ -156,11 +152,6 @@ class Application(tk.Tk):
             self.vehicletrim_form.grid(row=0, column=0)
         else:
             self.vehicletrim_form.lift()
-        """
-        else:
-            self.vehicletrim_form_window.lift(self)
-        self.vehicletrim_form_window.focus()
-        """
 
     def on_save_vehicletrim_form(self):
         data = self.vehicletrim_form.get()
