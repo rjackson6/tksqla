@@ -2,14 +2,10 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from tkinter import messagebox, ttk
-from tkinter import font as tkfont
-from tkinter.font import Font
 from . import db
 from . import gui
 from . import menus
 from .config import AppConfig
-from .constants import DEFAULT_CONFIG
-import configparser
 import tkinter as tk
 
 
@@ -199,6 +195,6 @@ class Application(tk.Tk):
             self.preferences_form_window.lift(self)
         self.preferences_form_window.focus()
 
-    def update_preferences(self, data):
-        print(data)
+    def update_preferences(self):
+        data = self.preferences_form.appearance_frame.get()
         self._appconfig.update_settings(data)

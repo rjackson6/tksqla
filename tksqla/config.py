@@ -23,8 +23,6 @@ class AppConfig:
 
     def update_settings(self, data):
         # needs whatever values that have been updated
-        if 'fontsize' in data:
-            self.cp.set('Appearance', 'fontsize', data['fontsize'])
         self.save()
 
 """

@@ -59,24 +59,22 @@ class PreferencesAppearance(tk.Frame):
         self.settings = settings
 
         self.inputs = {}
-        self.font_size_var = tk.IntVar()
-        self.font_size_var.set(16)
+        # self.font_size_var = tk.IntVar()
+        # self.font_size_var.set(16)
         self.font_size_label = ttk.Label(self, text='Font size')
-        self.inputs['fontsize'] = tk.Spinbox(self, textvariable=self.font_size_var)
+        self.inputs['fontsize'] = tk.Spinbox(self)
         # Layout
         self.font_size_label.grid(row=0, column=0)
         self.inputs['fontsize'].grid(row=0, column=1)
 
-        self.apply_btn = tk.Button(self, text='Apply', command=self.test_font)
-        self.apply_btn.configure(font=('Times New Roman', self.font_size_var.get()))
+        self.apply_btn = tk.Button(self, text='Apply', command=self.callbacks['settings--preferences--update'])
         self.apply_btn.grid(row=1, column=1)
 
-    def test_font(self):
-        self.font_size_var.set(48)
+    def get(self):
         data = {}
         for key, widget in self.inputs.items():
             data[key] = widget.get()
-        self.callbacks['settings--preferences--update'](data)
+        return data
 
 
 class PreferencesGeneral(tk.Frame):
