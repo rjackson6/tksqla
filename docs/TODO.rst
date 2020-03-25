@@ -2,6 +2,11 @@
 TO-DO
 =====
 
+Bugs
+====
+
+* Check enabled/disabled behavior with form callbacks
+
 Application Features
 ====================
 
@@ -20,6 +25,11 @@ Forms
 * Load existing record for editing
 * Expand validation
 
+Record Views
+------------
+
+* Scrollbars for Treeview
+
 Configuration
 =============
 
@@ -36,9 +46,13 @@ Design
    * Variables persist beyond the destruction of a widget
    * Some recommendations are to not use them unless needed in one of the above
      cases
+* New DB fields, validators
+* SQLite-specific types in SQLAlchemy
+* Column-to-widget mapping (i.e., get the data types from the column)
 
 Error-handling
 ==============
 
+* Route & parse from @contextmanager for starters
 * Unique constraint failures
 * Error feedback (in labels)

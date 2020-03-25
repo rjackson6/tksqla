@@ -15,7 +15,7 @@ class AppConfig:
         style = ttk.Style()
         for k, v in THEMES.items():
             style.theme_create(k, v['parent'], v['settings'])
-        style.theme_use('Dark')
+        # style.theme_use('Dark')
         print(style.theme_names())
 
     def _update_font(self):
