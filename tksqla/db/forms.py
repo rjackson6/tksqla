@@ -89,3 +89,24 @@ class VehicleTrimForm(Form):
     def requery_vehiclemake(self, session):
         q_vehiclemake = session.query(m.VehicleMake)
         return {row.name: row.id for row in q_vehiclemake.all()}
+
+
+class VehicleYearForm(Form):
+    make_model_trim = Field(label='Make, Model, Trim')
+    year = Field(label='Year')
+
+    def __init__(self, session):
+        self.session = session
+        query = session.query(
+            m.VehicleMake.name.label('make_name'),
+            m.VehicleModel.name.label('model_name'),
+            m.VehicleTrim.name.label('trim_name'),
+            m.VehicleTrim.id.label('trim_id')
+        )
+        query = query.select_from(m.VehicleTrim). \
+            join(m.VehicleTrim.vehiclemodel). \
+            join(m.VehicleModel.vehiclemake)
+        for row in query.all():
+            k = '{} {} {}'.format(row.make_name, row.model_name, row.trim_name)
+            v = row.trim_id
+            self.make_model_trim.values[k] = v

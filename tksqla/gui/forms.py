@@ -157,3 +157,16 @@ class VehicleTrimForm(tk.Frame):
             self.fields['name'].input.state(['disabled'])
         else:
             self.fields['name'].input.state(['!disabled'])
+
+
+class VehicleYearForm(tk.Frame):
+    def __init__(self, parent, fields, callbacks, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.callbacks = callbacks
+        self.fields = {}
+        self.fields['make_model_trim'] = w.FormField(self, fields['make_model_trim'], w.Combobox,
+                                                     input_kwargs={'lookups': fields['make_model_trim']['values']})
+        self.fields['year'] = w.FormField(self, fields['year'], ttk.Spinbox)
+        # Layout
+        self.fields['make_model_trim'].grid(column=0, row=0)
+        self.fields['year'].grid(column=1, row=0)

@@ -29,10 +29,12 @@ class Application(tk.Tk):
             'open_vehiclemake_form': self.open_vehiclemake_form,
             'open_vehiclemodel_form': self.open_vehiclemodel_form,
             'open_vehicletrim_form': self.open_vehicletrim_form,
+            'open_vehicleyear_form': self.open_vehicleyear_form,
             'open_vehicletrim_view': self.open_vehicletrim_view,
             'on_save_vehiclemake_form': self.on_save_vehiclemake_form,
             'on_save_vehiclemodel_form': self.on_save_vehiclemodel_form,
             'on_save_vehicletrim_form': self.on_save_vehicletrim_form,
+            'on_save_vehicleyear_form': self.on_save_vehicleyear_form,
             'qry_vehiclemake': self.qry_vehiclemake
         }
 
@@ -63,10 +65,14 @@ class Application(tk.Tk):
         self.workspace_frame.grid(row=0, column=1, sticky='NSEW')
         self.vehicletrim_btn = ttk.Button(self.left_nav_frame, text='Add Vehicle Trim',
                                           command=self.callbacks['open_vehicletrim_form'])
-        self.test_settings_btn = ttk.Button(self.left_nav_frame, text='View Vehicle Records',
-                                            command=self.callbacks['open_vehicletrim_view'])
+        self.vehicleyear_btn = ttk.Button(self.left_nav_frame, text='Add Vehicle Year',
+                                          command=self.callbacks['open_vehicleyear_form'])
+        self.vehicletrim_view_btn = ttk.Button(self.left_nav_frame, text='View Vehicle Records',
+                                               command=self.callbacks['open_vehicletrim_view'])
+
         self.vehicletrim_btn.grid(row=0, column=0)
-        self.test_settings_btn.grid(row=1, column=0)
+        self.vehicleyear_btn.grid(row=1, column=0)
+        self.vehicletrim_view_btn.grid(row=2, column=0)
 
         self.vehiclemake_form_window = None
         self.vehiclemodel_form_window = None
@@ -74,6 +80,7 @@ class Application(tk.Tk):
         self.vehiclemake_form = None
         self.vehiclemodel_form = None
         self.vehicletrim_form = None
+        self.vehicleyear_form = None
 
         self.vehicletrim_view = None
 
@@ -181,6 +188,21 @@ class Application(tk.Tk):
             self.vehicletrim_view.grid(row=0, column=0, sticky='NSEW')
         else:
             self.vehicletrim_view.lift()
+
+    def open_vehicleyear_form(self):
+        if self.vehicleyear_form is None:
+            with self.session_scope() as session:
+                self.vehicleyear_form = gui.forms.VehicleYearForm(
+                    self.workspace_frame,
+                    db.forms.VehicleYearForm(session).fields,
+                    self.callbacks
+                )
+            self.vehicleyear_form.grid(row=0, column=0, sticky='NSEW')
+        else:
+            self.vehicleyear_form.lift()
+
+    def on_save_vehicleyear_form(self):
+        pass
 
     def qry_vehiclemake(self):
         with self.session_scope() as session:
