@@ -6,7 +6,7 @@ from sqlalchemy import (
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 import sqlalchemy.types
 
 
@@ -135,7 +135,7 @@ class VehicleTrim(Base):
 
 
 class VehicleYear(Base):
-    __tablename__ = 'tksqla_vehicle'
+    __tablename__ = 'tksqla_vehicleyear'
     id = Column(Integer, primary_key=True)
     vehicletrim_id = Column(Integer, ForeignKey('tksqla_vehicletrim.id'), nullable=False)
     year = Column(Integer, nullable=False)
@@ -144,3 +144,9 @@ class VehicleYear(Base):
     )
 
     vehicletrim = relationship('VehicleTrim', back_populates='vehicleyears')
+
+    @validates('year')
+    def validate_year(self, key, value):
+        assert value >= 1886
+        assert len(str(value)) <= 4
+        return value

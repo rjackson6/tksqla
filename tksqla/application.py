@@ -202,7 +202,11 @@ class Application(tk.Tk):
             self.vehicleyear_form.lift()
 
     def on_save_vehicleyear_form(self):
-        pass
+        data = self.vehicleyear_form.get()
+        print(data)
+        with self.session_scope() as session:
+            db.forms.VehicleYearForm(session, data).save()
+        self.vehicleyear_form.reset()
 
     def qry_vehiclemake(self):
         with self.session_scope() as session:

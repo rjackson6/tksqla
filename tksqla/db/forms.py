@@ -95,7 +95,8 @@ class VehicleYearForm(Form):
     make_model_trim = Field(label='Make, Model, Trim')
     year = Field(label='Year')
 
-    def __init__(self, session):
+    def __init__(self, session, data=None):
+        self.data = data
         self.session = session
         query = session.query(
             m.VehicleMake.name.label('make_name'),
@@ -110,3 +111,11 @@ class VehicleYearForm(Form):
             k = '{} {} {}'.format(row.make_name, row.model_name, row.trim_name)
             v = row.trim_id
             self.make_model_trim.values[k] = v
+
+    def save(self):
+        new_vyear = m.VehicleYear(
+            vehicletrim_id=self.data['vehicletrim_id'],
+            year=self.data['year']
+        )
+        self.session.add(new_vyear)
+        self.session.commit()

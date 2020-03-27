@@ -75,6 +75,37 @@ class Combobox(ttk.Combobox):
         print('Invalid! d:{} i:{} P:{} s:{} S:{} v:{} V:{}'.format(d, i, P, s, S, v, V))
 
 
+class Spinbox(ttk.Spinbox):
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs)
+        vcmd = self.register(self._validate_all)
+        invcmd = self.register(self._invalid_command)
+        self.configure(
+            validate='all',
+            validatecommand=(vcmd, '%d', '%i', '%P', '%s', '%S', '%v', '%V'),
+            invalidcommand=(invcmd, '%d', '%i', '%P', '%s', '%S', '%v', '%V'),
+        )
+
+    def _validate_all(self, d, i, P, s, S, v, V):
+        print('d:{} i:{} P:{} s:{} S:{} v:{} V:{}'.format(d, i, P, s, S, v, V))
+        valid = True
+        if V == 'key':
+            valid = self._validate_key(d, i, P, s, S)
+        return valid
+
+    def _validate_key(self, d, i, P, s, S):
+        try:
+            int(S)
+        except ValueError:
+            return False
+        if len(P) > 4:
+            return False
+        return True
+
+    def _invalid_command(self, d, i, P, s, S, v, V):
+        print('Invalid! d:{} i:{} P:{} s:{} S:{} v:{} V:{}'.format(d, i, P, s, S, v, V))
+
+
 class FormField(tk.Frame):
     def __init__(self, parent, field_cfg, widget_cls, input_kwargs=None, *args, **kwargs):
         super().__init__(parent, **kwargs)
@@ -86,6 +117,8 @@ class FormField(tk.Frame):
         if not self.input_var:
             if widget_cls in (CharEntry, Combobox):
                 self.input_var = tk.StringVar()
+            elif widget_cls in (Spinbox,):
+                self.input_var = tk.IntVar()
             else:
                 self.input_var = tk.StringVar()  # Default
         # Widgets
@@ -114,5 +147,7 @@ class FormField(tk.Frame):
         return True
 
     def get(self):
-        if self.input_var:
+        if self.lookups and self.input_var:
+            return self.lookups[self.input_var.get()]
+        elif self.input_var:
             return self.input_var.get()

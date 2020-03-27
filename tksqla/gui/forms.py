@@ -166,7 +166,19 @@ class VehicleYearForm(tk.Frame):
         self.fields = {}
         self.fields['make_model_trim'] = w.FormField(self, fields['make_model_trim'], w.Combobox,
                                                      input_kwargs={'lookups': fields['make_model_trim']['values']})
-        self.fields['year'] = w.FormField(self, fields['year'], ttk.Spinbox)
+        self.fields['year'] = w.FormField(self, fields['year'], w.Spinbox)
+        self.save_btn = ttk.Button(self, text='Save', command=self.callbacks['on_save_vehicleyear_form'])
         # Layout
         self.fields['make_model_trim'].grid(column=0, row=0)
         self.fields['year'].grid(column=1, row=0)
+        self.save_btn.grid(column=1, row=1)
+
+    def get(self):
+        data = {
+            'vehicletrim_id': self.fields['make_model_trim'].get(),
+            'year': self.fields['year'].get()
+        }
+        return data
+
+    def reset(self):
+        print('reset')
