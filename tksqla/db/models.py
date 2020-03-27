@@ -128,7 +128,19 @@ class VehicleTrim(Base):
     )
 
     vehiclemodel = relationship('VehicleModel', back_populates='vehicletrims')
-    # vehicles = relationship('Vehicle', back_populates='vehicletrim')
+    vehicleyears = relationship('VehicleYear', back_populates='vehicletrim')
 
     def __repr__(self):
         return 'VehicleTrim({})'.format(self.name)
+
+
+class VehicleYear(Base):
+    __tablename__ = 'tksqla_vehicle'
+    id = Column(Integer, primary_key=True)
+    vehicletrim_id = Column(Integer, ForeignKey('tksqla_vehicletrim.id'), nullable=False)
+    year = Column(Integer, nullable=False)
+    __table_args__ = (
+        UniqueConstraint('year', 'vehicletrim_id'),
+    )
+
+    vehicletrim = relationship('VehicleTrim', back_populates='vehicleyears')
