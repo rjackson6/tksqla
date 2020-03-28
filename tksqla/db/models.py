@@ -1,12 +1,13 @@
 from sqlalchemy import (
     Column, ForeignKey, ForeignKeyConstraint, Table, UniqueConstraint, event,
-    Boolean, Date, Text
+    Boolean, Date, Enum, Text
 )  # Integer, String
 # noinspection PyProtectedMember
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, validates
+import enum
 import sqlalchemy.types
 
 
@@ -91,17 +92,15 @@ def configure_listener(class_, key, inst):
 
 
 # Tables
+class AssetTypeEnum(enum.Enum):
+    vehicle = enum.auto()
+
+
 class Asset(Base):
     __tablename__ = 'tksqla_asset'
     id = Column(Integer, primary_key=True)
-    assettype_id = Column(Integer, ForeignKey('tksqla_assettype.id'), nullable=False)
+    assettype = Column(Enum(AssetTypeEnum), nullable=False)
     description = Column(Text)
-
-
-class AssetType(Base):
-    __tablename__ = 'tksqla_assettype'
-    id = Column(Integer, primary_key=True)
-    name = Column(Integer, unique=True)
 
 
 class AssetVehicle(Base):

@@ -27,6 +27,19 @@ class Form:
         return f
 
 
+class VehicleAssetForm(Form):
+    description = Field(label='Description')
+    vehiclemake = Field(label='Make')
+    vehiclemodel = Field(label='Model')
+    vehicletrim = Field(label='Trim')
+    vehicleyear = Field(label='Year')
+    vin = Field(label='VIN')
+
+    def __init__(self, session, **kwargs):
+        q_years = session.query(m.VehicleYear.year).distinct().order_by(m.VehicleYear.year)
+        self.vehicleyear.values = {row.year: row.year for row in q_years.all()}
+
+
 class VehicleMakeForm(Form):
     name = Field(label='Vehicle Make Name')
 
@@ -42,7 +55,6 @@ class VehicleModelForm(Form):
     name = Field(label='Name')
 
     def __init__(self, session, **kwargs):
-        super().__init__()
         data = kwargs.get('data', None)
         vehiclemake_id = kwargs.get('vehiclemake_id', None)
         q_vehiclemake = session.query(m.VehicleMake)
@@ -67,7 +79,6 @@ class VehicleTrimForm(Form):
     name = Field(label='Name')
 
     def __init__(self, session, data=None):
-        super().__init__()
         self.data = data
         self.session = session
         if not self.data:

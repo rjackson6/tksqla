@@ -3,6 +3,35 @@ import tkinter as tk
 from . import widgets as w
 
 
+class VehicleAssetForm(tk.Frame):
+    def __init__(self, parent, fields, callbacks, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.callbacks = callbacks
+        self.fields = {}
+        self.fields['vehicleyear'] = w.FormField(self, fields['vehicleyear'], widget_cls=w.Combobox,
+                                                 input_kwargs={'lookups': fields['vehicleyear']['values']})
+        self.fields['vehiclemake'] = w.FormField(self, fields['vehiclemake'], widget_cls=w.Combobox,
+                                                 input_kwargs={'lookups': {}})
+        self.fields['vehiclemodel'] = w.FormField(self, fields['vehiclemodel'], widget_cls=w.Combobox,
+                                                  input_kwargs={'lookups': {}})
+        self.fields['vehicletrim'] = w.FormField(self, fields['vehicletrim'], widget_cls=w.Combobox,
+                                                 input_kwargs={'lookups': {}})
+        self.fields['vin'] = w.FormField(self, fields['vin'], widget_cls=w.CharEntry)
+        self.fields['description'] = w.FormField(self, fields['description'], widget_cls=w.CharEntry)
+        self.save_btn = ttk.Button(self, text='Save', command=self.callbacks['on_save_vehicleasset_form'])
+        # Layout
+        self.fields['vehicleyear'].grid(column=0, row=0)
+        self.fields['vehiclemake'].grid(column=1, row=0)
+        self.fields['vehiclemodel'].grid(column=2, row=0)
+        self.fields['vehicletrim'].grid(column=3, row=0)
+        self.fields['vin'].grid(column=0, row=1)
+        self.fields['description'].grid(column=1, row=1)
+        self.save_btn.grid(column=2, row=1)
+
+    def get(self):
+        pass
+
+
 class VehicleMakeForm(tk.Frame):
     def __init__(self, parent, fields, callbacks, **kwargs):
         super().__init__(parent, **kwargs)
