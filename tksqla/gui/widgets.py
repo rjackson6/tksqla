@@ -148,6 +148,7 @@ class FormField(tk.Frame):
 
     def get(self):
         if self.lookups and self.input_var:
+            print(self.lookups)
             return self.lookups[self.input_var.get()]
         elif self.input_var:
             return self.input_var.get()

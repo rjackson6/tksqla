@@ -19,6 +19,11 @@ class VehicleAssetForm(tk.Frame):
         self.fields['vin'] = w.FormField(self, fields['vin'], widget_cls=w.CharEntry)
         self.fields['description'] = w.FormField(self, fields['description'], widget_cls=w.CharEntry)
         self.save_btn = ttk.Button(self, text='Save', command=self.callbacks['on_save_vehicleasset_form'])
+        # Bindings
+        self.fields['vehicleyear'].input.bind('<<ComboboxSelected>>', self.on_vehicleyear_selected)
+        self.fields['vehiclemake'].input.bind('<<ComboboxSelected>>', self.on_vehiclemake_selected)
+        self.fields['vehiclemodel'].input.bind('<<ComboboxSelected>>', self.on_vehiclemodel_selected)
+        self.fields['vehicletrim'].input.bind('<<ComboboxSelected>>', self.on_vehicletrim_selected)
         # Layout
         self.fields['vehicleyear'].grid(column=0, row=0)
         self.fields['vehiclemake'].grid(column=1, row=0)
@@ -29,6 +34,42 @@ class VehicleAssetForm(tk.Frame):
         self.save_btn.grid(column=2, row=1)
 
     def get(self):
+        vehicleyear = self.fields['vehicleyear'].get()
+        vehicletrim_id = self.fields['vehicletrim'].get()
+        vin = self.fields['vin'].get()
+        description = self.fields['description'].get()
+        data = {
+            'vehicleyear': vehicleyear,
+            'vehicletrim_id': vehicletrim_id,
+            'vin': vin,
+            'description': description
+        }
+        return data
+
+    def on_vehicleyear_selected(self, event):
+        year = self.fields['vehicleyear'].get()
+        make_lookups = self.callbacks['filter_vehiclemake_by_vehicleyear'](year)
+        self.fields['vehiclemake'].lookups = make_lookups
+        self.fields['vehiclemake'].input.configure(values=['', *sorted(make_lookups)])
+        self.fields['vehiclemake'].input.set('')
+
+    def on_vehiclemake_selected(self, event):
+        year = self.fields['vehicleyear'].get()
+        selected_make = self.fields['vehiclemake'].get()
+        model_lookups = self.callbacks['filter_vehiclemodel_by_vehiclemake'](selected_make, year=year)
+        self.fields['vehiclemodel'].lookups = model_lookups
+        self.fields['vehiclemodel'].input.configure(values=['', *sorted(model_lookups)])
+        self.fields['vehiclemodel'].input.set('')
+
+    def on_vehiclemodel_selected(self, event):
+        year = self.fields['vehicleyear'].get()
+        selected_model = self.fields['vehiclemodel'].get()
+        trim_lookups = self.callbacks['filter_vehicletrim_by_vehiclemodel'](selected_model, year=year)
+        self.fields['vehicletrim'].lookups = trim_lookups
+        self.fields['vehicletrim'].input.configure(values=['', *sorted(trim_lookups)])
+        self.fields['vehicletrim'].input.set('')
+
+    def on_vehicletrim_selected(self, event):
         pass
 
 
@@ -164,12 +205,13 @@ class VehicleTrimForm(tk.Frame):
 
     def on_vehiclemake_selected(self, event):
         selected_value = self.fields['vehiclemake'].get()
+        print(selected_value)
         if selected_value == '':
             self.fields['vehiclemodel'].input.state(['disabled'])
             self.vehiclemodel_form_btn.state(['disabled'])
             self.fields['name'].input.state(['disabled'])
         else:
-            vehiclemake_id = self.vehiclemake_lookups.get(selected_value)
+            vehiclemake_id = selected_value
             if vehiclemake_id is None:
                 return  # testing combobox
             self.vehiclemodel_lookups = self.callbacks['filter_vehiclemodel_by_vehiclemake'](vehiclemake_id)

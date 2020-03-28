@@ -109,6 +109,8 @@ class AssetVehicle(Base):
     vehicleyear_id = Column(Integer, ForeignKey('tksqla_vehicleyear.id'), nullable=False)
     vin = Column(String, unique=True)
 
+    asset = relationship('Asset')
+
 
 class VehicleMake(Base):
     __tablename__ = 'tksqla_vehiclemake'

@@ -35,9 +35,26 @@ class VehicleAssetForm(Form):
     vehicleyear = Field(label='Year')
     vin = Field(label='VIN')
 
-    def __init__(self, session, **kwargs):
+    def __init__(self, session, data=None):
+        self.data = data
+        self.session = session
         q_years = session.query(m.VehicleYear.year).distinct().order_by(m.VehicleYear.year)
-        self.vehicleyear.values = {row.year: row.year for row in q_years.all()}
+        self.vehicleyear.values = {str(row.year): row.year for row in q_years.all()}
+
+    def save(self):
+        q_vehicleyear = self.session.query(m.VehicleYear.id).\
+            filter(m.VehicleYear.year == self.data['vehicleyear']).\
+            filter(m.VehicleYear.vehicletrim_id == self.data['vehicletrim_id'])
+        vehicleyear_id = q_vehicleyear.one().id
+        assettype = m.AssetTypeEnum.vehicle.name
+        new_asset = m.Asset(assettype=assettype, description=self.data['description'])
+        new_assetvehicle = m.AssetVehicle(
+            asset=new_asset,
+            vin=self.data['vin'],
+            vehicleyear_id=vehicleyear_id
+        )
+        self.session.add(new_assetvehicle)
+        self.session.commit()
 
 
 class VehicleMakeForm(Form):

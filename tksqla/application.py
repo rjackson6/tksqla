@@ -25,14 +25,16 @@ class Application(tk.Tk):
             'file--quit': self.quit,
             'settings--preferences': self.open_preferences,
             'settings--preferences--update': self.update_preferences,
+            'filter_vehiclemake_by_vehicleyear': self.filter_vehiclemake_by_vehicleyear,
             'filter_vehiclemodel_by_vehiclemake': self.filter_vehiclemodel_by_vehiclemake,
+            'filter_vehicletrim_by_vehiclemodel': self.filter_vehicletrim_by_vehiclemodel,
             'open_vehicleasset_form': self.open_vehicleasset_form,
             'open_vehiclemake_form': self.open_vehiclemake_form,
             'open_vehiclemodel_form': self.open_vehiclemodel_form,
             'open_vehicletrim_form': self.open_vehicletrim_form,
             'open_vehicleyear_form': self.open_vehicleyear_form,
             'open_vehicletrim_view': self.open_vehicletrim_view,
-            'on_save_vehicleasset_form': self.open_vehicleasset_form,
+            'on_save_vehicleasset_form': self.on_save_vehicleasset_form,
             'on_save_vehiclemake_form': self.on_save_vehiclemake_form,
             'on_save_vehiclemodel_form': self.on_save_vehiclemodel_form,
             'on_save_vehicletrim_form': self.on_save_vehicletrim_form,
@@ -226,15 +228,26 @@ class Application(tk.Tk):
             self.vehicleasset_form.lift()
 
     def on_save_vehicleasset_form(self):
-        pass
+        data = self.vehicleasset_form.get()
+        with self.session_scope() as session:
+            db.forms.VehicleAssetForm(session, data).save()
+        print('post-save')
 
     def qry_vehiclemake(self):
         with self.session_scope() as session:
             return db.queries.qry_vehiclemake(session)
 
-    def filter_vehiclemodel_by_vehiclemake(self, vehiclemake_id):
+    def filter_vehiclemake_by_vehicleyear(self, year):
         with self.session_scope() as session:
-            return db.queries.qry_filter_vehiclemodel(session, vehiclemake_id)
+            return db.filters.vehiclemake_by_vehicleyear(session, year)
+
+    def filter_vehiclemodel_by_vehiclemake(self, vehiclemake_id, year=None):
+        with self.session_scope() as session:
+            return db.filters.vehiclemodel_by_vehiclemake(session, vehiclemake_id, year)
+
+    def filter_vehicletrim_by_vehiclemodel(self, vehiclemodel_id, year=None):
+        with self.session_scope() as session:
+            return db.filters.vehicletrim_by_vehiclemodel(session, vehiclemodel_id, year)
 
     def open_preferences(self):
         if self.preferences_form_window is None or not self.preferences_form_window.winfo_exists():

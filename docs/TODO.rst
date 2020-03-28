@@ -24,6 +24,7 @@ Forms
    * Prevention of obvious unique constraint failues
 * Load existing record for editing
 * Expand validation
+* Combobox casefold() validation with integer entries
 
 Record Views
 ------------
