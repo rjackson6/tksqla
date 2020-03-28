@@ -91,6 +91,26 @@ def configure_listener(class_, key, inst):
 
 
 # Tables
+class Asset(Base):
+    __tablename__ = 'tksqla_asset'
+    id = Column(Integer, primary_key=True)
+    assettype_id = Column(Integer, ForeignKey('tksqla_assettype.id'), nullable=False)
+    description = Column(Text)
+
+
+class AssetType(Base):
+    __tablename__ = 'tksqla_assettype'
+    id = Column(Integer, primary_key=True)
+    name = Column(Integer, unique=True)
+
+
+class AssetVehicle(Base):
+    __tablename__ = 'tksqla_asset_vehicle'
+    id = Column(Integer, ForeignKey('tksqla_asset.id'), primary_key=True)
+    vehicleyear_id = Column(Integer, ForeignKey('tksqla_vehicleyear.id'), nullable=False)
+    vin = Column(String, unique=True)
+
+
 class VehicleMake(Base):
     __tablename__ = 'tksqla_vehiclemake'
     id = Column(Integer, primary_key=True)
